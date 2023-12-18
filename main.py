@@ -79,33 +79,51 @@ def print_board(board):
 
 
 def play_game():
+    choice = input("Choose 'X' or 'O': ").upper()
+    while choice not in ['X', 'O']:
+        choice = input("Invalid choice. Choose 'X' or 'O': ").upper()
+
+    user_player = choice
+    ai_player = 'X' if user_player == 'O' else 'O'
+
     board = [["-" for _ in range(3)] for _ in range(3)]
-    current_player = "X"
+    current_player = 'X'
+
+    if ai_player == 'X':
+        row, col = find_best_move(board)
+        board[row][col] = current_player
+        current_player = 'O'
+
     while True:
         print_board(board)
         result = evaluate(board)
         if result is not None:
             if result == "X":
-                print("X wins!")
+                print("X wins!" if user_player == 'X' else "AI wins!")
             elif result == "O":
-                print("O wins!")
+                print("O wins!" if user_player == 'O' else "AI wins!")
             else:
                 print("It's a tie!")
             break
 
-        if current_player == "X":
+        if current_player == user_player:
+            while True:
+                try:
+                    row, col = map(int, input("Enter your move (row col): ").split())
+                    row -= 1
+                    col -= 1
+                    if board[row][col] == "-":
+                        board[row][col] = current_player
+                        break
+                    else:
+                        print("Invalid move. Try again.")
+                except ValueError:
+                    print("Invalid input. Please enter row and column numbers separated by space.")
+        else:
             row, col = find_best_move(board)
             board[row][col] = current_player
-            current_player = "O"
-        else:
-            while True:
-                row, col = map(int, input("Enter your move (row col): ").split())
-                if board[row][col] == "-":
-                    board[row][col] = current_player
-                    break
-                else:
-                    print("Invalid move. Try again.")
-            current_player = "X"
+
+        current_player = 'X' if current_player == 'O' else 'O'
 
 
 if __name__ == "__main__":
